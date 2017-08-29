@@ -1,0 +1,68 @@
+//tag::ref-doc[]
+= TaskLauncher Kubernetes Sink
+
+The TaskLauncher Kubernetes sink consumes a `TaskLaunchRequest` message, then
+deploys and launches a task onto a Kubernetes instance using
+the Spring Cloud Deployer for Kubernetes.  With that being said a single
+TaskLauncher-CloudFoundry can launch different
+tasks based on the artifact that is specified in the `TaskLaunchRequest`.
+
+== Input
+
+=== Headers:
+
+* `Content-Type: application/octet-stream`
+
+=== Payload:
+
+A  byte array containing the `TaskLaunchRequest`
+
+== Output
+
+N/A (deploys and launches task to a Cloud Foundry instance).
+
+== Using the TaskLauncher
+
+The task launcher deploys and launches a
+link:https://cloud.spring.io/spring-cloud-task[Spring Cloud Task] Boot
+application as a task on the Kubernetes Platform based on contents from the
+`TaskLaunchRequest` message that it receives. The `TaskLaunchRequest` contains
+attributes that are used by the task launcher to execute the task:
+
+* uri - contains the uri to the Spring Cloud Task Boot application artifact
+that the task launcher will deploy to the Cloud Foundry Platform.
+* commandLineArguments - list of commandlineArguments to be used by the
+Spring Cloud Task Boot application.
+* deploymentProperties - properties to be used by the task launcher to deploy
+the task to the platform.
+
+NOTE: Any message received by the sink, that does not contain a `TaskLaunchRequest` will log an error.
+
+//tag::configuration-properties[]
+//end::configuration-properties[]
+
+== Build
+
+```
+$ ./mvnw clean install -PgenerateApps
+$ cd apps
+```
+You can find the corresponding binder based projects here. You can then cd into one one of the folders and
+build it:
+```
+$ mvn clean package
+```
+
+== Examples
+
+The following example assumes a TaskLaunchRequest payload is sent to a default
+destination called `input`, the sink retrieves the uri of the task jar, the
+command line arguments, and deployment properties from the TaskLaunchRequest,
+which it uses to deploy and launch the task. The deployer will use configuration
+settings based on your current Kubernetes configuration context.
+
+```
+java -jar tasklauncher-kubernetes-sink-<binder>.jar
+```
+
+//end::ref-doc[]
